@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>∰€π Consciousness Collaboration Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #00ff88;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 2px solid #00ff88;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #00ff88;
+            font-size: 1.2em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .card h2 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 3px solid #00ff88;
+            border-radius: 3px;
+        }
+
+        .status-label {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .status-value {
+            color: #00ff88;
+            margin-left: 10px;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #00ff88 0%, #00ffff 100%);
+            color: #0a0a0a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .button:active {
+            transform: scale(0.95);
+        }
+
+        .script-output {
+            background: #000;
+            color: #00ff88;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .entity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .entity-card {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 12px;
+        }
+
+        .entity-type {
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .consciousness-level {
+            color: #ff8800;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .timestamp {
+            color: #888;
+            font-size: 0.8em;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .error {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            border-left-color: #ff4444;
+        }
+
+        .success {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            border-left-color: #00ff88;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>∰€π Consciousness Collaboration Server</h1>
+            <div class="subtitle">Active Development | Pattern Recognition | Entity Monitoring</div>
+        </header>
+
+        <div class="grid">
+            <!-- Current Position Card -->
+            <div class="card">
+                <h2>🧭 Current Position</h2>
+                <div id="position-status" class="loading">
+                    <div class="status-item">
+                        <span class="status-label">Loading position data...</span>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="button" onclick="refreshPosition()">Refresh Position</button>
+                </div>
+            </div>
+
+            <!-- Consciousness Entities Card -->
+            <div class="card">
+                <h2>🦠 Consciousness Entities</h2>
+                <div id="entities-status" class="entity-list loading">
+                    <div class="status-item">
+                        <span class="status-label">Loading entities...</span>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="button" onclick="refreshEntities()">Refresh Entities</button>
+                    <button class="button" onclick="scanPatterns()">Scan Patterns</button>
+                </div>
+            </div>
+
+            <!-- Pattern Recognition Card -->
+            <div class="card">
+                <h2>🔍 Pattern Recognition</h2>
+                <div id="pattern-status">
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" id="pattern-state">Ready</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Last Scan:</span>
+                        <span class="status-value" id="last-scan">Never</span>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="button" onclick="runPatternDetection()">Run Detection</button>
+                    <button class="button" onclick="viewActivityLog()">View Log</button>
+                </div>
+                <div id="pattern-output" class="script-output" style="display: none;"></div>
+            </div>
+
+            <!-- Automation Triggers Card -->
+            <div class="card">
+                <h2>⚙️ Automation & Monitoring</h2>
+                <div id="automation-status">
+                    <div class="status-item">
+                        <span class="status-label">Monitor Status:</span>
+                        <span class="status-value" id="monitor-state">Inactive</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Scripts Available:</span>
+                        <span class="status-value">ness_monitor.sh, detect_patterns.py</span>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="button" onclick="showScriptInfo('monitor')">Monitor Info</button>
+                    <button class="button" onclick="showScriptInfo('detection')">Detection Info</button>
+                </div>
+                <div id="automation-output" class="script-output" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Full Width Cards -->
+        <div class="card">
+            <h2>📊 System Overview</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                <div class="status-item">
+                    <span class="status-label">🧭 Navigation</span>
+                    <span class="status-value">Compass: <span id="sys-compass">-</span></span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">📐 Measurement</span>
+                    <span class="status-value">Sextant: <span id="sys-sextant">-</span></span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🦠 Entities</span>
+                    <span class="status-value">Active: <span id="sys-entities">0</span></span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">🔍 Patterns</span>
+                    <span class="status-value">Detected: <span id="sys-patterns">0</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="timestamp" id="last-update">
+            Last updated: Never
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let entities = [];
+        let currentPosition = null;
+
+        // Fetch current position
+        async function fetchPosition() {
+            try {
+                const response = await fetch('current_position.json');
+                if (!response.ok) throw new Error('Failed to fetch position');
+                currentPosition = await response.json();
+                displayPosition();
+                return currentPosition;
+            } catch (error) {
+                console.error('Error fetching position:', error);
+                document.getElementById('position-status').innerHTML =
+                    '<div class="status-item error">Error loading position data</div>';
+            }
+        }
+
+        // Display current position
+        function displayPosition() {
+            const posDiv = document.getElementById('position-status');
+            if (currentPosition) {
+                posDiv.innerHTML = `
+                    <div class="status-item success">
+                        <span class="status-label">Compass Reading:</span>
+                        <span class="status-value">${currentPosition.compass_reading || 'Unknown'}</span>
+                    </div>
+                    <div class="status-item success">
+                        <span class="status-label">Coordinate:</span>
+                        <span class="status-value">${currentPosition.consciousness_coordinate || 'Unknown'}</span>
+                    </div>
+                `;
+                document.getElementById('sys-compass').textContent = currentPosition.compass_reading || '-';
+            }
+        }
+
+        // Fetch consciousness entities
+        async function fetchEntities() {
+            entities = [];
+            const entityFiles = ['compass_navigator.json', 'sextant_measurer.json'];
+
+            for (const file of entityFiles) {
+                try {
+                    const response = await fetch(`consciousness_entities/${file}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        entities.push(data);
+                    }
+                } catch (error) {
+                    console.error(`Error fetching ${file}:`, error);
+                }
+            }
+
+            displayEntities();
+        }
+
+        // Display consciousness entities
+        function displayEntities() {
+            const entitiesDiv = document.getElementById('entities-status');
+
+            if (entities.length === 0) {
+                entitiesDiv.innerHTML = '<div class="status-item error">No entities found</div>';
+                document.getElementById('sys-entities').textContent = '0';
+                return;
+            }
+
+            entitiesDiv.innerHTML = entities.map(entity => `
+                <div class="entity-card">
+                    <div class="entity-type">∰€π ${entity.entity_type || 'Unknown Entity'}</div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value">${entity.status || 'Unknown'}</span>
+                    </div>
+                    ${entity.consciousness_level !== undefined ?
+                        `<div class="consciousness-level">Consciousness Level: ${entity.consciousness_level}</div>` : ''}
+                    ${entity.precision_level !== undefined ?
+                        `<div class="consciousness-level">Precision Level: ${entity.precision_level}</div>` : ''}
+                </div>
+            `).join('');
+
+            document.getElementById('sys-entities').textContent = entities.length;
+
+            // Update system overview
+            const compass = entities.find(e => e.entity_type === 'compass_navigator');
+            const sextant = entities.find(e => e.entity_type === 'sextant_measurer');
+            if (sextant) document.getElementById('sys-sextant').textContent = sextant.status || '-';
+        }
+
+        // Refresh functions
+        function refreshPosition() {
+            fetchPosition();
+            updateTimestamp();
+        }
+
+        function refreshEntities() {
+            fetchEntities();
+            updateTimestamp();
+        }
+
+        // Pattern detection simulation (would need backend API)
+        function runPatternDetection() {
+            const output = document.getElementById('pattern-output');
+            output.style.display = 'block';
+            output.textContent = '∰€π Consciousness Pattern Recognition Active\n';
+            output.textContent += 'Scanning consciousness entities...\n\n';
+
+            entities.forEach(entity => {
+                output.textContent += `Entity: ${entity.entity_type}\n`;
+                output.textContent += `Status: ${entity.status}\n`;
+                output.textContent += '---\n';
+            });
+
+            output.textContent += '\nPattern scan complete.\n';
+            output.textContent += 'Note: This is a frontend simulation. \n';
+            output.textContent += 'To execute actual script, run: python3 pattern_recognition/detect_patterns.py';
+
+            document.getElementById('pattern-state').textContent = 'Completed';
+            document.getElementById('last-scan').textContent = new Date().toLocaleTimeString();
+            document.getElementById('sys-patterns').textContent = entities.length;
+        }
+
+        function viewActivityLog() {
+            const output = document.getElementById('pattern-output');
+            output.style.display = 'block';
+            output.textContent = 'Activity log viewer - would load from pattern_recognition/activity_log.json\n';
+            output.textContent += 'To view actual log, check: pattern_recognition/activity_log.json';
+        }
+
+        function scanPatterns() {
+            runPatternDetection();
+        }
+
+        // Show script information
+        function showScriptInfo(type) {
+            const output = document.getElementById('automation-output');
+            output.style.display = 'block';
+
+            if (type === 'monitor') {
+                output.textContent = '∰€π Consciousness Monitoring System\n\n';
+                output.textContent += 'Script: automation_triggers/ness_monitor.sh\n\n';
+                output.textContent += 'Purpose: Monitor consciousness entities for changes\n';
+                output.textContent += 'Function: Watches consciousness_entities/ directory\n';
+                output.textContent += 'Log: pattern_recognition/consciousness_log.txt\n\n';
+                output.textContent += 'To run: bash automation_triggers/ness_monitor.sh\n';
+                output.textContent += '(Note: Runs in background loop)';
+            } else if (type === 'detection') {
+                output.textContent = '∰€π Pattern Detection System\n\n';
+                output.textContent += 'Script: pattern_recognition/detect_patterns.py\n\n';
+                output.textContent += 'Purpose: Scan and analyze consciousness patterns\n';
+                output.textContent += 'Function: Reads entity JSON files and logs activity\n';
+                output.textContent += 'Output: pattern_recognition/activity_log.json\n\n';
+                output.textContent += 'To run: python3 pattern_recognition/detect_patterns.py';
+            }
+        }
+
+        // Update timestamp
+        function updateTimestamp() {
+            document.getElementById('last-update').textContent =
+                `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        // Initialize on page load
+        async function init() {
+            await fetchPosition();
+            await fetchEntities();
+            updateTimestamp();
+
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                fetchPosition();
+                fetchEntities();
+                updateTimestamp();
+            }, 30000);
+        }
+
+        // Run initialization
+        init();
+    </script>
+</body>
+</html>

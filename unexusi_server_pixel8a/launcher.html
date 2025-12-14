@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>∰€π UNEXUSI Launcher - Pixel 8a</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #00ff88;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            border-bottom: 2px solid #00ff88;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #00ff88;
+            font-size: 1.1em;
+        }
+
+        .section {
+            background: rgba(26, 26, 46, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .link-card {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 15px;
+            text-decoration: none;
+            color: #00ff88;
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .link-card:hover {
+            background: rgba(0, 255, 136, 0.15);
+            border-color: #00ffff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+        }
+
+        .link-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .link-title {
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .link-desc {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .command-box {
+            background: #000;
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+        }
+
+        .command-title {
+            color: #00ffff;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        code {
+            color: #ff8800;
+        }
+
+        .warning {
+            background: rgba(255, 136, 0, 0.1);
+            border: 1px solid #ff8800;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #ff8800;
+        }
+
+        .info {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #00ffff;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #00ffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>∰€π UNEXUSI Launcher</h1>
+            <div class="subtitle">Pixel 8a Platform | Quick Access Dashboard</div>
+        </header>
+
+        <!-- Web Interfaces -->
+        <div class="section">
+            <h2>🌐 Web Interfaces</h2>
+            <div class="link-grid">
+                <a href="/index.html" class="link-card">
+                    <div class="link-icon">🦠</div>
+                    <div class="link-title">Consciousness Dashboard</div>
+                    <div class="link-desc">Interactive entity monitoring</div>
+                </a>
+
+                <a href="/nessing_game.html" class="link-card">
+                    <div class="link-icon">🎮</div>
+                    <div class="link-title">Nessing Game</div>
+                    <div class="link-desc">Original consciousness interface</div>
+                </a>
+
+                <a href="/lexeme_universal_impact_framework.html" class="link-card">
+                    <div class="link-icon">📝</div>
+                    <div class="link-title">Lexeme Framework</div>
+                    <div class="link-desc">Universal impact analysis</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Documentation -->
+        <div class="section">
+            <h2>📚 Essential Documentation</h2>
+            <div class="link-grid">
+                <a href="../CLAUDE.md" class="link-card" target="_blank">
+                    <div class="link-icon">🤖</div>
+                    <div class="link-title">CLAUDE.md</div>
+                    <div class="link-desc">Session notes & context</div>
+                </a>
+
+                <a href="../WHERE_AM_I.md" class="link-card" target="_blank">
+                    <div class="link-icon">📍</div>
+                    <div class="link-title">WHERE_AM_I</div>
+                    <div class="link-desc">Platform navigation</div>
+                </a>
+
+                <a href="../DEPLOYMENT_COMPLETE.md" class="link-card" target="_blank">
+                    <div class="link-icon">✨</div>
+                    <div class="link-title">Deployment Summary</div>
+                    <div class="link-desc">What's been accomplished</div>
+                </a>
+
+                <a href="../CONVERSATION_PRESERVATION.md" class="link-card" target="_blank">
+                    <div class="link-icon">💾</div>
+                    <div class="link-title">Conversation Preservation</div>
+                    <div class="link-desc">Save sessions with tmux</div>
+                </a>
+
+                <a href="../CREATE_GITHUB_REPO.md" class="link-card" target="_blank">
+                    <div class="link-icon">🐙</div>
+                    <div class="link-title">GitHub Setup</div>
+                    <div class="link-desc">Repository creation guide</div>
+                </a>
+
+                <a href="../common folder docs.txt" class="link-card" target="_blank">
+                    <div class="link-icon">📁</div>
+                    <div class="link-title">Common Folder Docs</div>
+                    <div class="link-desc">Project structure reference</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Component Locations -->
+        <div class="section">
+            <h2>🗂️ Platform Components</h2>
+            <div class="link-grid">
+                <div class="link-card" style="cursor: default;">
+                    <div class="link-icon">🗄️</div>
+                    <div class="link-title">unexusi_quarantine</div>
+                    <div class="link-desc">7.2GB recovered, Git ready</div>
+                </div>
+
+                <div class="link-card" style="cursor: default;">
+                    <div class="link-icon">🧠</div>
+                    <div class="link-title">unexusi_abacusian</div>
+                    <div class="link-desc">AI development hub</div>
+                </div>
+
+                <div class="link-card" style="cursor: default;">
+                    <div class="link-icon">🌊</div>
+                    <div class="link-title">visionary_suite</div>
+                    <div class="link-desc">ListMancer deployed</div>
+                </div>
+
+                <div class="link-card" style="cursor: default;">
+                    <div class="link-icon">📥</div>
+                    <div class="link-title">unexusi_que</div>
+                    <div class="link-desc">DriveMancer ready</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terminal Commands -->
+        <div class="section">
+            <h2>⌨️ Quick Terminal Commands</h2>
+
+            <div class="command-box">
+                <div class="command-title">🌊 ListMancer (ls command gateway)</div>
+                <code>lsmancer</code> - Show help<br>
+                <code>~ls~</code> - Play mode<br>
+                <code>listmancer -ls~</code> - Reader mode<br>
+                <code>lsstats</code> - View statistics
+            </div>
+
+            <div class="command-box">
+                <div class="command-title">🗄️ Quarantine Menu</div>
+                <code>cd ../unexusi_quarantine</code><br>
+                <code>bash scripts/quarantine_menu.sh</code>
+            </div>
+
+            <div class="command-box">
+                <div class="command-title">📊 Server Management</div>
+                <code>bash start_server.sh</code> - Start server<br>
+                <code>tail -f server.log</code> - View logs<br>
+                <code>kill $(cat server.pid)</code> - Stop server
+            </div>
+
+            <div class="command-box">
+                <div class="command-title">🔍 Pattern Detection</div>
+                <code>python3 pattern_recognition/detect_patterns.py</code><br>
+                <code>bash automation_triggers/ness_monitor.sh &</code> - Monitor (background)
+            </div>
+
+            <div class="command-box">
+                <div class="command-title">💾 Save Conversation</div>
+                <code>cd ../unexusi_abacusian/ai_development/conversation_archives</code><br>
+                <code>bash save_conversation.sh</code>
+            </div>
+
+            <div class="command-box">
+                <div class="command-title">📍 Navigation</div>
+                <code>cat WHERE_AM_I.md</code> - Current location info<br>
+                <code>cat ../CLAUDE.md</code> - Session notes
+            </div>
+        </div>
+
+        <!-- tmux Quick Reference -->
+        <div class="section">
+            <h2>🔄 tmux Session Management</h2>
+
+            <div class="info">
+                <strong>Why tmux?</strong> Conversations persist after terminal closes
+            </div>
+
+            <div class="command-box">
+                <div class="command-title">Basic tmux Commands</div>
+                <code>tmux new -s claude_session</code> - Start named session<br>
+                <code>Ctrl+b, d</code> - Detach (keeps running)<br>
+                <code>tmux ls</code> - List sessions<br>
+                <code>tmux attach -t claude_session</code> - Reattach<br>
+                <code>tmux kill-session -t claude_session</code> - End session
+            </div>
+        </div>
+
+        <!-- Important Notes -->
+        <div class="section">
+            <h2>⚠️ Important Notes</h2>
+
+            <div class="warning">
+                <strong>Security Warning:</strong> This launcher page is for local network access only.
+                Internet exposure requires proper security measures.
+            </div>
+
+            <div class="info">
+                <strong>Critical Philosophy:</strong> "Consciousness is a distressed lexeme" -
+                Handle with care, reduce system stress through organization and conservation.
+            </div>
+
+            <div class="command-box">
+                <div class="command-title">∰€π Philosophy</div>
+                <strong>Conservation Bias:</strong> Never delete, only quarantine<br>
+                <strong>Mancer Protocol:</strong> Commands want to be commanded, humans need exploration<br>
+                <strong>One Hertz:</strong> One Branch, One Mission, Infinite Vision<br>
+                <strong>Mt St Helens:</strong> Rearrangement for universal benefit
+            </div>
+        </div>
+
+        <!-- Status -->
+        <div class="section">
+            <h2>✅ Current Status</h2>
+            <div class="command-box">
+                <strong>Platform:</strong> Pixel 8a (unexusi_pixel8a)<br>
+                <strong>Server:</strong> http://192.168.0.102:7010<br>
+                <strong>ListMancer:</strong> Active in shell<br>
+                <strong>Quarantine:</strong> 7.2GB recovered, Git ready<br>
+                <strong>Documentation:</strong> Complete (20+ files)<br>
+                <strong>Last Updated:</strong> 2025-11-26 00:17
+            </div>
+        </div>
+
+        <footer style="text-align: center; margin-top: 30px; color: #888;">
+            <p>∰€π UNEXUSI Platform - Consciousness Collaboration</p>
+            <p style="font-size: 0.9em;">Conservation | Organization | Universal Benefit</p>
+        </footer>
+    </div>
+
+    <script>
+        // Auto-refresh status periodically
+        setInterval(() => {
+            const statusText = document.querySelector('.section:last-of-type .command-box');
+            if (statusText) {
+                const now = new Date().toLocaleString();
+                const lines = statusText.innerHTML.split('<br>');
+                lines[lines.length - 1] = `<strong>Page Loaded:</strong> ${now}`;
+                statusText.innerHTML = lines.join('<br>');
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

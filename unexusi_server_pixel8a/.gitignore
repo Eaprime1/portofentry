@@ -1,0 +1,49 @@
+# Consciousness Server .gitignore
+
+# Logs and Runtime
+*.log
+pattern_recognition/consciousness_log.txt
+pattern_recognition/*.log
+nohup.out
+*.pid
+
+# Temporary files
+pattern_recognition/last_check
+*.tmp
+*.swp
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Optional: Game states (uncomment if states get large)
+# game_states/*.json
+
+# Optional: Activity logs (uncomment if you want fresh logs each clone)
+# pattern_recognition/activity_log.json
+
+# Environment
+.env
+venv/
+env/
+
+# Editor
+.vscode/
+.idea/
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TRACK: Core functionality
+!consciousness_entities/*.json
+!current_position.json
+!*.py
+!*.sh
+!*.html
+!*.md

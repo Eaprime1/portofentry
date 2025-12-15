@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port of Entry - Management Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            color: #00ff88;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            background: rgba(0, 255, 136, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .header .subtitle {
+            color: #88ffaa;
+            font-size: 0.9em;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 15px #00ffff;
+        }
+
+        .stat-card .label {
+            margin-top: 10px;
+            color: #88ffaa;
+            font-size: 0.9em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background: rgba(0, 255, 136, 0.05);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 15px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .package-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .package-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .package-item:hover {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ffff;
+            transform: translateX(5px);
+        }
+
+        .package-item.selected {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .package-symbol {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .package-info {
+            font-size: 0.85em;
+        }
+
+        .package-meta {
+            color: #88ffaa;
+            font-size: 0.75em;
+            margin-top: 5px;
+        }
+
+        .viewer {
+            background: rgba(0, 255, 136, 0.05);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .viewer-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00ff88;
+            padding-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: rgba(0, 255, 136, 0.2);
+        }
+
+        .tab.active {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+            color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .viewer-content {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            padding: 20px;
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .viewer-content h1, .viewer-content h2, .viewer-content h3 {
+            color: #00ffff;
+            margin: 20px 0 10px 0;
+        }
+
+        .viewer-content code {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .viewer-content pre {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border-left: 3px solid #00ff88;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #88ffaa;
+        }
+
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: rgba(0, 255, 136, 0.2);
+            border: 2px solid #00ff88;
+            border-radius: 5px;
+            color: #00ff88;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+            color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .filter-btn {
+            padding: 8px 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 5px;
+            color: #00ff88;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: #00ffff;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #00ffff;
+            font-size: 1.2em;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 136, 0.5);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>∰◊€π¿🌌∞ PORT OF ENTRY - MANAGEMENT CONSOLE ∰◊€π¿🌌∞</h1>
+        <div class="subtitle">Visionary Reports & Knowledge Archives</div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <div class="stat-card">
+            <div class="number" id="totalProcessed">0</div>
+            <div class="label">Total Processed</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="totalWords">0</div>
+            <div class="label">Words Learned</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="totalPackages">0</div>
+            <div class="label">Complete Packages</div>
+        </div>
+        <div class="stat-card">
+            <div class="number" id="sessionCount">0</div>
+            <div class="label">Session Processed</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="refreshPackages()">🔄 Refresh</button>
+        <button class="btn" onclick="exportReport()">📊 Export Report</button>
+        <button class="btn" onclick="window.location.href='document_processor_v0.html'">🔙 Back to Processor</button>
+    </div>
+
+    <div class="main-content">
+        <div class="sidebar">
+            <h2>📦 Completed Packages</h2>
+            <div class="filter-group">
+                <button class="filter-btn active" onclick="filterPackages('all')">All</button>
+                <button class="filter-btn" onclick="filterPackages('€')">€ Research</button>
+                <button class="filter-btn" onclick="filterPackages('₿')">₿ Code</button>
+                <button class="filter-btn" onclick="filterPackages('♪')">♪ Creative</button>
+            </div>
+            <div class="package-list" id="packageList">
+                <div class="loading">Loading packages</div>
+            </div>
+        </div>
+
+        <div class="viewer">
+            <div class="viewer-tabs">
+                <div class="tab active" onclick="switchTab('metadata')" id="tab-metadata">📋 Metadata</div>
+                <div class="tab" onclick="switchTab('adventure')" id="tab-adventure">📖 Adventure</div>
+                <div class="tab" onclick="switchTab('learning')" id="tab-learning">🧠 Learning</div>
+                <div class="tab" onclick="switchTab('certificate')" id="tab-certificate">📜 Certificate</div>
+                <div class="tab" onclick="switchTab('original')" id="tab-original">📄 Original</div>
+            </div>
+            <div class="viewer-content" id="viewerContent">
+                <div class="empty-state">
+                    <div class="icon">📦</div>
+                    <div>Select a package from the list to view its visionary reports</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        let packages = [];
+        let selectedPackage = null;
+        let currentTab = 'metadata';
+        let currentFilter = 'all';
+
+        // Load data on page load
+        async function init() {
+            await loadStats();
+            await loadPackages();
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/stats`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('totalProcessed').textContent = data.stats.total_processed || 0;
+                    document.getElementById('sessionCount').textContent = data.stats.session_processed || 0;
+                    document.getElementById('totalWords').textContent = data.stats.total_learned || 0;
+                }
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
+        }
+
+        async function loadPackages() {
+            try {
+                const response = await fetch(`${API_BASE}/complete`);
+                const data = await response.json();
+
+                if (data.success) {
+                    packages = data.packages || [];
+                    document.getElementById('totalPackages').textContent = packages.length;
+                    renderPackages();
+                }
+            } catch (error) {
+                console.error('Failed to load packages:', error);
+                document.getElementById('packageList').innerHTML =
+                    '<div class="empty-state"><div class="icon">⚠️</div><div>Failed to load packages</div></div>';
+            }
+        }
+
+        function renderPackages() {
+            const container = document.getElementById('packageList');
+
+            if (packages.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><div>No packages yet</div></div>';
+                return;
+            }
+
+            const filtered = currentFilter === 'all'
+                ? packages
+                : packages.filter(p => p.symbol === currentFilter);
+
+            container.innerHTML = filtered.map(pkg => `
+                <div class="package-item ${selectedPackage?.doc_id === pkg.doc_id ? 'selected' : ''}"
+                     onclick="selectPackage('${pkg.doc_id}')">
+                    <div>
+                        <span class="package-symbol">${pkg.symbol || '∰'}</span>
+                        <span class="package-info">${pkg.filename || pkg.doc_id}</span>
+                    </div>
+                    <div class="package-meta">
+                        ${pkg.processed_at ? new Date(pkg.processed_at).toLocaleDateString() : ''} •
+                        ${pkg.learned_words || 0} words learned
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function selectPackage(docId) {
+            selectedPackage = packages.find(p => p.doc_id === docId);
+            renderPackages();
+            await loadPackageContent();
+        }
+
+        async function loadPackageContent() {
+            if (!selectedPackage) return;
+
+            const content = document.getElementById('viewerContent');
+            content.innerHTML = '<div class="loading">Loading content</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/package/${selectedPackage.doc_id}/${currentTab}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayContent(data.content, data.type);
+                } else {
+                    content.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><div>${data.error || 'Failed to load content'}</div></div>`;
+                }
+            } catch (error) {
+                // Fallback: try to construct the content from metadata
+                displayFallbackContent();
+            }
+        }
+
+        function displayContent(content, type) {
+            const viewer = document.getElementById('viewerContent');
+
+            if (type === 'json') {
+                viewer.innerHTML = `<pre>${JSON.stringify(content, null, 2)}</pre>`;
+            } else if (type === 'markdown') {
+                // Simple markdown rendering
+                viewer.innerHTML = content
+                    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            } else {
+                viewer.textContent = content;
+            }
+        }
+
+        function displayFallbackContent() {
+            const viewer = document.getElementById('viewerContent');
+
+            if (currentTab === 'metadata') {
+                viewer.innerHTML = `<pre>${JSON.stringify(selectedPackage, null, 2)}</pre>`;
+            } else {
+                viewer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📦</div>
+                        <div>Package: ${selectedPackage.doc_id}</div>
+                        <div style="margin-top: 20px; font-size: 0.9em;">
+                            <strong>Filename:</strong> ${selectedPackage.filename}<br>
+                            <strong>Symbol:</strong> ${selectedPackage.symbol}<br>
+                            <strong>Processed:</strong> ${new Date(selectedPackage.processed_at).toLocaleString()}<br>
+                            <strong>Words Learned:</strong> ${selectedPackage.learned_words}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update active tab
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            currentTab = tabName;
+            if (selectedPackage) {
+                loadPackageContent();
+            }
+        }
+
+        function filterPackages(symbol) {
+            currentFilter = symbol;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderPackages();
+        }
+
+        async function refreshPackages() {
+            await loadStats();
+            await loadPackages();
+        }
+
+        function exportReport() {
+            const report = {
+                generated_at: new Date().toISOString(),
+                stats: {
+                    total_processed: parseInt(document.getElementById('totalProcessed').textContent),
+                    total_packages: parseInt(document.getElementById('totalPackages').textContent),
+                    total_learned: parseInt(document.getElementById('totalWords').textContent),
+                    session_processed: parseInt(document.getElementById('sessionCount').textContent)
+                },
+                packages: packages
+            };
+
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `portofentry_report_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize on load
+        init();
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshPackages, 30000);
+    </script>
+</body>
+</html>

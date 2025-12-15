@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port of Entry v0 - Document Processor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1a1b26;
+            --bg-secondary: #24283b;
+            --bg-tertiary: #414868;
+            --terminal-bg: #0a0e14;
+            --text-primary: #c0caf5;
+            --text-secondary: #9aa5ce;
+            --accent-blue: #7aa2f7;
+            --accent-green: #9ece6a;
+            --accent-yellow: #e0af68;
+            --accent-red: #f7768e;
+            --accent-purple: #bb9af7;
+            --accent-cyan: #7dcfff;
+            --border: #414868;
+            --led-off: #2a2a3a;
+            --led-on: #9ece6a;
+            --led-flash: #e0af68;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--accent-blue);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .status-indicator {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .left-panel {
+            width: 300px;
+            background: var(--bg-secondary);
+            border-right: 2px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .option-btn {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: var(--accent-blue);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .option-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal {
+            flex: 1;
+            background: var(--terminal-bg);
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-y: auto;
+            color: var(--accent-green);
+        }
+
+        .terminal-line {
+            margin-bottom: 0.25rem;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-2px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .terminal-prompt::before {
+            content: '$ ';
+            color: var(--accent-cyan);
+        }
+
+        .terminal-success { color: var(--accent-green); }
+        .terminal-error { color: var(--accent-red); }
+        .terminal-info { color: var(--accent-blue); }
+        .terminal-warning { color: var(--accent-yellow); }
+
+        .progress-section {
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border);
+            padding: 1.5rem;
+            min-height: 200px;
+        }
+
+        .progress-title {
+            font-size: 0.875rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .stage-indicators {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            gap: 0.5rem;
+        }
+
+        .stage {
+            flex: 1;
+            text-align: center;
+        }
+
+        .stage-led {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--led-off);
+            margin: 0 auto 0.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .stage-led.active {
+            background: var(--led-on);
+            box-shadow: 0 0 15px var(--led-on);
+        }
+
+        .stage-led.flashing {
+            background: var(--led-flash);
+            animation: flash 0.5s ease-in-out 3;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .stage-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .stage.active .stage-label {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: var(--bg-tertiary);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 1rem;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #7dab54;
+            transform: translateY(-2px);
+        }
+
+        .btn-reject {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #d95770;
+        }
+
+        .doc-list {
+            margin-top: 1rem;
+        }
+
+        .doc-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .doc-item:hover {
+            background: var(--accent-blue);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .doc-icon {
+            font-size: 1.5rem;
+        }
+
+        .doc-info {
+            flex: 1;
+        }
+
+        .doc-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .doc-meta {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">∰◊€ PORT OF ENTRY v0</div>
+        <div class="status-indicator">
+            <span id="statusText">System Ready</span>
+            <span style="color: var(--text-secondary);">|</span>
+            <span style="color: var(--accent-green);">Processed: <span id="statProcessed">0</span></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="left-panel">
+            <div class="panel-title">⌨ Command Options</div>
+
+            <button class="option-btn" onclick="loadDocuments()">
+                📋 List Documents
+            </button>
+
+            <button class="option-btn" onclick="processNext()" id="btnProcessNext">
+                ▶️ Process Next Document
+            </button>
+
+            <button class="option-btn" onclick="processAllBatch()" id="btnProcessAll">
+                ⏩ Process All (5 at a time)
+            </button>
+
+            <button class="option-btn" onclick="viewLearning()">
+                🧠 View Learning Report
+            </button>
+
+            <button class="option-btn" onclick="clearTerminal()">
+                🗑️ Clear Terminal
+            </button>
+
+            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                <div class="panel-title">📊 Statistics</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">
+                    <div>Pending: <span id="statPending">0</span></div>
+                    <div>Words Learned: <span id="statLearned">0</span></div>
+                </div>
+            </div>
+
+            <div id="docListPanel" class="doc-list"></div>
+        </div>
+
+        <div class="right-panel">
+            <div class="terminal" id="terminal">
+                <div class="terminal-line terminal-success">∰◊€π¿🌌∞ PORT OF ENTRY PROCESSOR v0 ∰◊€π¿🌌∞</div>
+                <div class="terminal-line terminal-info">System initialized. Ready for document processing.</div>
+                <div class="terminal-line">Incoming directory: /home/sauron/portofentry_external/incoming</div>
+                <div class="terminal-line"></div>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-title">🗺 Journey Progress</div>
+
+                <div class="stage-indicators">
+                    <div class="stage" id="stage-incoming">
+                        <div class="stage-led"></div>
+                        <div class="stage-label">📬 Incoming</div>
+                    </div>
+                    <div class="stage" id="stage-processing">
+                        <div class="stage-led"></div>
+                        <div class="stage-label">⚙️ Processing</div>
+                    </div>
+                    <div class="stage" id="stage-transform">
+                        <div class="stage-led"></div>
+                        <div class="stage-label">✨ Transform</div>
+                    </div>
+                    <div class="stage" id="stage-transition">
+                        <div class="stage-led"></div>
+                        <div class="stage-label">🌉 Transition</div>
+                    </div>
+                    <div class="stage" id="stage-verify">
+                        <div class="stage-led"></div>
+                        <div class="stage-label">✓ Verify</div>
+                    </div>
+                    <div class="stage" id="stage-complete">
+                        <div class="stage-led"></div>
+                        <div class="stage-label">📦 Complete</div>
+                    </div>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
+
+                <div id="currentDocInfo" style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    No document currently processing
+                </div>
+
+                <div class="action-buttons" id="actionButtons" style="display: none;">
+                    <button class="action-btn btn-approve" onclick="approveDocument()">
+                        ✓ Approve & Complete
+                    </button>
+                    <button class="action-btn btn-reject" onclick="rejectDocument()">
+                        ✗ Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        let documents = [];
+        let currentDoc = null;
+        let processing = false;
+        let learnedWords = [];
+        let stats = { processed: 0, pending: 0, learned: 0 };
+
+        // Initialize
+        function init() {
+            terminalWrite('System ready. Awaiting commands...', 'info');
+            loadDocuments();
+        }
+
+        // Terminal functions
+        function terminalWrite(text, type = '') {
+            const terminal = document.getElementById('terminal');
+            const line = document.createElement('div');
+            line.className = `terminal-line terminal-${type}`;
+
+            if (type === 'command') {
+                line.innerHTML = `<span class="terminal-prompt"></span>${text}`;
+            } else {
+                line.textContent = text;
+            }
+
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function clearTerminal() {
+            terminalWrite('clear', 'command');
+            setTimeout(() => {
+                document.getElementById('terminal').innerHTML = '';
+                terminalWrite('Terminal cleared.', 'success');
+            }, 100);
+        }
+
+        // Load real documents from API
+        async function loadDocuments() {
+            terminalWrite('ls /home/sauron/portofentry_external/incoming/', 'command');
+            terminalWrite('Scanning for documents...', 'info');
+
+            try {
+                const response = await fetch(`${API_BASE}/documents`);
+                const data = await response.json();
+
+                if (data.success) {
+                    documents = data.documents;
+                    stats.pending = documents.length;
+                    updateStats();
+
+                    terminalWrite(`Found ${documents.length} documents:`, 'success');
+                    documents.forEach((doc, i) => {
+                        terminalWrite(`  ${i+1}. ${doc.symbol} ${doc.name} (${doc.size})`, 'output');
+                    });
+
+                    renderDocumentList();
+                } else {
+                    terminalWrite(`Error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                terminalWrite(`Error loading documents: ${error.message}`, 'error');
+            }
+        }
+
+        function renderDocumentList() {
+            const panel = document.getElementById('docListPanel');
+            panel.innerHTML = '<div class="panel-title" style="margin-top: 1rem;">Documents Queue</div>';
+
+            if (documents.length === 0) {
+                panel.innerHTML += '<div style="font-size: 0.75rem; color: var(--text-secondary); padding: 1rem;">No documents in incoming directory</div>';
+                return;
+            }
+
+            documents.forEach((doc, i) => {
+                const item = document.createElement('div');
+                item.className = 'doc-item';
+                item.onclick = () => processDocument(doc);
+                item.innerHTML = `
+                    <div class="doc-icon">${doc.symbol}</div>
+                    <div class="doc-info">
+                        <div class="doc-name">${doc.name}</div>
+                        <div class="doc-meta">${doc.type} • ${doc.size}</div>
+                    </div>
+                `;
+                panel.appendChild(item);
+            });
+        }
+
+        // Process single document
+        async function processDocument(doc) {
+            if (processing) {
+                terminalWrite('Already processing a document. Please wait...', 'warning');
+                return;
+            }
+
+            processing = true;
+            currentDoc = doc;
+
+            document.getElementById('currentDocInfo').textContent = `Processing: ${doc.name}`;
+            terminalWrite('', '');
+            terminalWrite(`./process_document.sh "${doc.name}"`, 'command');
+            terminalWrite(`Starting journey for: ${doc.name}`, 'info');
+
+            // Stages with visual feedback
+            await processStage('incoming', 'Receiving document from external source...', 0);
+            await sleep(1000);
+
+            await processStage('processing', 'Analyzing metadata and content...', 20);
+            await sleep(1000);
+
+            await processStage('transform', 'Applying transformations and extracting insights...', 40);
+            await sleep(1000);
+
+            await processStage('transition', 'Crossing the threshold to internal space...', 60);
+            await sleep(1000);
+
+            await processStage('verify', 'Verification required. Awaiting approval...', 80);
+
+            // Show approve/reject buttons
+            document.getElementById('actionButtons').style.display = 'flex';
+        }
+
+        async function processStage(stageId, message, progress) {
+            const stage = document.getElementById(`stage-${stageId}`);
+            const led = stage.querySelector('.stage-led');
+
+            stage.classList.add('active');
+            led.classList.add('flashing');
+            terminalWrite(message, 'info');
+            updateProgress(progress);
+
+            await sleep(800);
+
+            led.classList.remove('flashing');
+            led.classList.add('active');
+            terminalWrite(`✓ ${stageId} complete`, 'success');
+        }
+
+        // Real API call to process
+        async function approveDocument() {
+            terminalWrite('', '');
+            terminalWrite('approve_document --confirm', 'command');
+            await processStage('complete', 'Creating certificate and complete package...', 100);
+
+            terminalWrite('Sending to processing backend...', 'info');
+
+            try {
+                const response = await fetch(`${API_BASE}/process`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: currentDoc.path })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    terminalWrite('✓ Document approved and integrated', 'success');
+                    terminalWrite(`📜 Certificate: ${data.doc_id}`, 'info');
+                    terminalWrite(`💼 Economic designation: ${data.symbol}`, 'info');
+
+                    if (data.learned_words && data.learned_words.length > 0) {
+                        data.learned_words.forEach(w => {
+                            terminalWrite(`🧠 Learned: "${w.word}" from ${w.stage}`, 'info');
+                            learnedWords.push(w);
+                        });
+                    }
+
+                    terminalWrite(`Package location: ${data.package_dir}`, 'success');
+
+                    stats.processed++;
+                    stats.learned += (data.learned_words || []).length;
+
+                    finishProcessing();
+                } else {
+                    terminalWrite(`Error: ${data.error}`, 'error');
+                    processing = false;
+                }
+            } catch (error) {
+                terminalWrite(`Error: ${error.message}`, 'error');
+                processing = false;
+            }
+        }
+
+        function rejectDocument() {
+            terminalWrite('reject_document', 'command');
+            terminalWrite('✗ Document rejected. Remaining in incoming...', 'warning');
+
+            setTimeout(() => {
+                resetProgress();
+                processing = false;
+                currentDoc = null;
+                document.getElementById('actionButtons').style.display = 'none';
+                document.getElementById('currentDocInfo').textContent = 'No document currently processing';
+            }, 1000);
+        }
+
+        function finishProcessing() {
+            // Refresh document list
+            setTimeout(() => {
+                resetProgress();
+                processing = false;
+                currentDoc = null;
+                document.getElementById('actionButtons').style.display = 'none';
+                document.getElementById('currentDocInfo').textContent = 'No document currently processing';
+
+                terminalWrite('', '');
+                terminalWrite('Refreshing document list...', 'info');
+
+                loadDocuments();  // Auto-refresh!
+            }, 1500);
+        }
+
+        function processNext() {
+            if (documents.length === 0) {
+                terminalWrite('No documents in queue', 'warning');
+                return;
+            }
+            processDocument(documents[0]);
+        }
+
+        // Process All (batch of 5)
+        async function processAllBatch() {
+            if (documents.length === 0) {
+                terminalWrite('No documents to process', 'warning');
+                return;
+            }
+
+            if (processing) {
+                terminalWrite('Already processing. Please wait...', 'warning');
+                return;
+            }
+
+            terminalWrite('', '');
+            terminalWrite('./process_bulk.sh --batch 5', 'command');
+            const batchSize = Math.min(documents.length, 5);
+            terminalWrite(`Starting bulk processing (${batchSize} documents)...`, 'info');
+
+            // Disable buttons
+            processing = true;
+            document.getElementById('btnProcessNext').disabled = true;
+            document.getElementById('btnProcessAll').disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/process_all`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ documents: documents })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    terminalWrite(`✓ Processed ${data.processed} documents`, 'success');
+
+                    data.results.forEach(result => {
+                        if (result.success) {
+                            terminalWrite(`  ✓ ${result.name} → ${result.doc_id}`, 'success');
+                        } else {
+                            terminalWrite(`  ✗ ${result.name}: ${result.error}`, 'error');
+                        }
+                    });
+
+                    stats.processed += data.processed;
+
+                    // Refresh list
+                    terminalWrite('', '');
+                    terminalWrite('Refreshing document list...', 'info');
+                    setTimeout(() => {
+                        loadDocuments();
+                        processing = false;
+                        document.getElementById('btnProcessNext').disabled = false;
+                        document.getElementById('btnProcessAll').disabled = false;
+                    }, 1000);
+                } else {
+                    terminalWrite(`Error: ${data.error}`, 'error');
+                    processing = false;
+                    document.getElementById('btnProcessNext').disabled = false;
+                    document.getElementById('btnProcessAll').disabled = false;
+                }
+            } catch (error) {
+                terminalWrite(`Error: ${error.message}`, 'error');
+                processing = false;
+                document.getElementById('btnProcessNext').disabled = false;
+                document.getElementById('btnProcessAll').disabled = false;
+            }
+        }
+
+        function viewLearning() {
+            terminalWrite('cat learning_report.txt', 'command');
+            terminalWrite('', '');
+            terminalWrite('=== LEARNING ANALYSIS REPORT ===', 'success');
+            terminalWrite(`Total lexemes learned: ${stats.learned}`, 'info');
+            terminalWrite('', '');
+
+            if (learnedWords.length > 0) {
+                terminalWrite('Recent vocabulary:', 'info');
+                learnedWords.slice(-10).forEach(item => {
+                    terminalWrite(`  "${item.word}" - ${item.stage}`, 'output');
+                });
+            } else {
+                terminalWrite('No words learned yet. Process some documents!', 'warning');
+            }
+        }
+
+        // Helper functions
+        function updateProgress(percent) {
+            const bar = document.getElementById('progressBar');
+            bar.style.width = percent + '%';
+            bar.textContent = percent + '%';
+        }
+
+        function resetProgress() {
+            updateProgress(0);
+            document.querySelectorAll('.stage').forEach(stage => {
+                stage.classList.remove('active');
+                const led = stage.querySelector('.stage-led');
+                led.classList.remove('active', 'flashing');
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('statProcessed').textContent = stats.processed;
+            document.getElementById('statPending').textContent = stats.pending;
+            document.getElementById('statLearned').textContent = stats.learned;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initialize on load
+        window.onload = init;
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (!processing) {
+                loadDocuments();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+# Port of Entry - Git Ignore
+
+# Internal processing directories
+portofentry_internal/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Environment
+.env
+.venv
+venv/
+ENV/
+
+# Test files (keep in external)
+/test_*.txt

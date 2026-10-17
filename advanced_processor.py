@@ -23,23 +23,23 @@ COMPLETE_PACKAGES = INTERNAL / "complete_packages"
 
 # Economic symbols
 ECONOMIC_SYMBOLS = {
-    'research': '€',      # Euro for research/academic
-    'code': '₿',          # Bitcoin for code/tech
-    'pdf': '€',          # Default PDFs to research
-    'md': '₿',           # Markdown to code
-    'py': '₿',           # Python to code
-    'js': '₿',           # JavaScript to code
-    'financial': '$',     # Dollar for financial
-    'xlsx': '$',         # Excel to financial
-    'csv': '$',          # CSV to financial
-    'legal': '§',        # Section for legal
-    'docx': '§',         # Word docs to legal
-    'doc': '§',
-    'creative': '♪',     # Music note for creative
-    'txt': '♪',         # Text to creative
-    'medical': '℞',      # Prescription for medical
-    'architecture': '∞',  # Infinity for architecture
-    'general': '∰'       # System-wide default
+    "research": "€",  # Euro for research/academic
+    "code": "₿",  # Bitcoin for code/tech
+    "pdf": "€",  # Default PDFs to research
+    "md": "₿",  # Markdown to code
+    "py": "₿",  # Python to code
+    "js": "₿",  # JavaScript to code
+    "financial": "$",  # Dollar for financial
+    "xlsx": "$",  # Excel to financial
+    "csv": "$",  # CSV to financial
+    "legal": "§",  # Section for legal
+    "docx": "§",  # Word docs to legal
+    "doc": "§",
+    "creative": "♪",  # Music note for creative
+    "txt": "♪",  # Text to creative
+    "medical": "℞",  # Prescription for medical
+    "architecture": "∞",  # Infinity for architecture
+    "general": "∰",  # System-wide default
 }
 
 
@@ -57,7 +57,7 @@ class DocumentProcessor:
 
     def determine_economic_symbol(self, filename):
         """Determine economic symbol based on file type"""
-        ext = Path(filename).suffix.lower().lstrip('.')
+        ext = Path(filename).suffix.lower().lstrip(".")
 
         # Check extension mapping
         if ext in ECONOMIC_SYMBOLS:
@@ -70,25 +70,34 @@ class DocumentProcessor:
                 return symbol
 
         # Default
-        return ECONOMIC_SYMBOLS['general']
+        return ECONOMIC_SYMBOLS["general"]
 
     def extract_random_word(self, text, stage_name):
         """Extract a random meaningful word from text"""
         # Remove special characters and split into words
-        words = re.findall(r'\b[a-zA-Z]{4,}\b', text)
+        words = re.findall(r"\b[a-zA-Z]{4,}\b", text)
 
         # Filter out common words
-        common_words = {'this', 'that', 'with', 'from', 'have', 'been', 'were',
-                       'their', 'there', 'about', 'would', 'could', 'should'}
+        common_words = {
+            "this",
+            "that",
+            "with",
+            "from",
+            "have",
+            "been",
+            "were",
+            "their",
+            "there",
+            "about",
+            "would",
+            "could",
+            "should",
+        }
         meaningful_words = [w for w in words if w.lower() not in common_words]
 
         if meaningful_words:
             word = random.choice(meaningful_words)
-            self.learned_words.append({
-                'word': word,
-                'stage': stage_name,
-                'timestamp': datetime.now().isoformat()
-            })
+            self.learned_words.append({"word": word, "stage": stage_name, "timestamp": datetime.now().isoformat()})
             return word
         return None
 
@@ -97,7 +106,7 @@ class DocumentProcessor:
         source_path = Path(source_path)
 
         if not source_path.exists():
-            return {'success': False, 'error': 'File not found'}
+            return {"success": False, "error": "File not found"}
 
         # Generate IDs
         doc_id = f"DOC-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
@@ -112,37 +121,37 @@ class DocumentProcessor:
 
         # Read file content for learning
         try:
-            if source_path.suffix in ['.txt', '.md', '.py', '.js']:
-                with open(source_path, 'r', encoding='utf-8', errors='ignore') as f:
+            if source_path.suffix in [".txt", ".md", ".py", ".js"]:
+                with open(source_path, "r", encoding="utf-8", errors="ignore") as f:
                     content = f.read()
             else:
                 content = source_path.name  # Use filename if can't read
-        except:
+        except Exception:
             content = source_path.name
 
         # Stage 1: Incoming
         print(f"📬 Stage 1: Incoming - {source_path.name}")
 
         # Stage 2: Processing
-        print(f"⚙️ Stage 2: Processing...")
-        word1 = self.extract_random_word(content, 'processing')
+        print("⚙️ Stage 2: Processing...")
+        word1 = self.extract_random_word(content, "processing")
         if word1:
             print(f"🧠 Learned: '{word1}'")
 
         # Stage 3: Transformation
-        print(f"✨ Stage 3: Transformation...")
-        word2 = self.extract_random_word(content, 'transformation')
+        print("✨ Stage 3: Transformation...")
+        word2 = self.extract_random_word(content, "transformation")
         if word2:
             print(f"🧠 Learned: '{word2}'")
 
         # Stage 4: Transition
-        print(f"🌉 Stage 4: Transition...")
+        print("🌉 Stage 4: Transition...")
 
         # Stage 5: Verification
-        print(f"✓ Stage 5: Verification...")
+        print("✓ Stage 5: Verification...")
 
         # Create complete package
-        print(f"📦 Creating complete package...")
+        print("📦 Creating complete package...")
 
         # 1. Copy original document
         shutil.copy2(source_path, package_dir / source_path.name)
@@ -150,25 +159,25 @@ class DocumentProcessor:
 
         # 2. Create adventure chronicle
         adventure = self.create_adventure(source_path.name, journey_id, symbol, content)
-        with open(package_dir / f"{doc_id}_ADVENTURE.md", 'w') as f:
+        with open(package_dir / f"{doc_id}_ADVENTURE.md", "w") as f:
             f.write(adventure)
         print(f"  ✓ Adventure: {doc_id}_ADVENTURE.md")
 
         # 3. Create journey metadata
         metadata = self.create_metadata(source_path, doc_id, journey_id, symbol)
-        with open(package_dir / f"{doc_id}_METADATA.json", 'w') as f:
+        with open(package_dir / f"{doc_id}_METADATA.json", "w") as f:
             json.dump(metadata, f, indent=2)
         print(f"  ✓ Metadata: {doc_id}_METADATA.json")
 
         # 4. Create learning report
         learning_report = self.create_learning_report(source_path.name)
-        with open(package_dir / f"{doc_id}_LEARNING.md", 'w') as f:
+        with open(package_dir / f"{doc_id}_LEARNING.md", "w") as f:
             f.write(learning_report)
         print(f"  ✓ Learning: {doc_id}_LEARNING.md")
 
         # 5. Generate certificate
         certificate = self.generate_certificate(source_path.name, doc_id, symbol)
-        with open(package_dir / f"{doc_id}_CERTIFICATE.md", 'w') as f:
+        with open(package_dir / f"{doc_id}_CERTIFICATE.md", "w") as f:
             f.write(certificate)
         print(f"  ✓ Certificate: {doc_id}_CERTIFICATE.md")
 
@@ -176,12 +185,12 @@ class DocumentProcessor:
         print(f"📍 Location: portofentry_internal/complete_packages/{doc_id}/")
 
         return {
-            'success': True,
-            'doc_id': doc_id,
-            'journey_id': journey_id,
-            'symbol': symbol,
-            'package_dir': str(package_dir),
-            'learned_words': self.learned_words[-2:] if len(self.learned_words) >= 2 else self.learned_words
+            "success": True,
+            "doc_id": doc_id,
+            "journey_id": journey_id,
+            "symbol": symbol,
+            "package_dir": str(package_dir),
+            "learned_words": self.learned_words[-2:] if len(self.learned_words) >= 2 else self.learned_words,
         }
 
     def create_adventure(self, filename, journey_id, symbol, content):
@@ -280,23 +289,23 @@ Knowledge has been extracted, learned, and integrated.
         stat = source_path.stat()
 
         return {
-            'document_id': doc_id,
-            'journey_id': journey_id,
-            'original_filename': source_path.name,
-            'economic_symbol': symbol,
-            'file_size': stat.st_size,
-            'file_type': source_path.suffix,
-            'processed_at': datetime.now().isoformat(),
-            'stages': {
-                'incoming': {'timestamp': datetime.now().isoformat(), 'status': 'complete'},
-                'processing': {'timestamp': datetime.now().isoformat(), 'status': 'complete'},
-                'transformation': {'timestamp': datetime.now().isoformat(), 'status': 'complete'},
-                'transition': {'timestamp': datetime.now().isoformat(), 'status': 'complete'},
-                'verification': {'timestamp': datetime.now().isoformat(), 'status': 'approved'},
-                'completion': {'timestamp': datetime.now().isoformat(), 'status': 'complete'}
+            "document_id": doc_id,
+            "journey_id": journey_id,
+            "original_filename": source_path.name,
+            "economic_symbol": symbol,
+            "file_size": stat.st_size,
+            "file_type": source_path.suffix,
+            "processed_at": datetime.now().isoformat(),
+            "stages": {
+                "incoming": {"timestamp": datetime.now().isoformat(), "status": "complete"},
+                "processing": {"timestamp": datetime.now().isoformat(), "status": "complete"},
+                "transformation": {"timestamp": datetime.now().isoformat(), "status": "complete"},
+                "transition": {"timestamp": datetime.now().isoformat(), "status": "complete"},
+                "verification": {"timestamp": datetime.now().isoformat(), "status": "approved"},
+                "completion": {"timestamp": datetime.now().isoformat(), "status": "complete"},
             },
-            'learned_words': self.learned_words[-2:] if len(self.learned_words) >= 2 else self.learned_words,
-            'package_location': f'portofentry_internal/complete_packages/{doc_id}/'
+            "learned_words": self.learned_words[-2:] if len(self.learned_words) >= 2 else self.learned_words,
+            "package_location": f"portofentry_internal/complete_packages/{doc_id}/",
         }
 
     def create_learning_report(self, filename):
@@ -421,19 +430,19 @@ def main():
     processor = DocumentProcessor()
     result = processor.process_document(sys.argv[1])
 
-    if result['success']:
-        print("\n" + "="*60)
+    if result["success"]:
+        print("\n" + "=" * 60)
         print("PROCESSING COMPLETE")
-        print("="*60)
+        print("=" * 60)
         print(f"Document ID: {result['doc_id']}")
         print(f"Journey ID: {result['journey_id']}")
         print(f"Economic Symbol: {result['symbol']}")
         print(f"Package: {result['package_dir']}")
-        print("="*60)
+        print("=" * 60)
     else:
         print(f"ERROR: {result['error']}")
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

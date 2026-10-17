@@ -15,6 +15,7 @@ import re
 # Directories
 BASE_DIR = Path(__file__).parent
 EXTERNAL = BASE_DIR / "portofentry_external"
+INCOMING = EXTERNAL / "incoming"
 INTERNAL = BASE_DIR / "portofentry_internal"
 JOURNEY = BASE_DIR / "JOURNEY"
 
@@ -52,7 +53,7 @@ class DocumentProcessor:
 
     def create_directories(self):
         """Create necessary directories"""
-        for dir_path in [EXTERNAL, INTERNAL, COMPLETE_PACKAGES, JOURNEY]:
+        for dir_path in [EXTERNAL, INCOMING, INTERNAL, COMPLETE_PACKAGES, JOURNEY]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
     def determine_economic_symbol(self, filename):

@@ -24,7 +24,7 @@ PORT = 8000
 BASE_DIR = Path(__file__).parent.resolve()
 
 # Directories
-INCOMING = Path("/home/sauron/portofentry_external/incoming")
+INCOMING = BASE_DIR / "portofentry_external" / "incoming"
 INTERNAL = BASE_DIR / "portofentry_internal"
 COMPLETE_PACKAGES = INTERNAL / "complete_packages"
 
@@ -134,7 +134,11 @@ class PortOfEntryServer(http.server.SimpleHTTPRequestHandler):
             data = json.loads(post_data.decode('utf-8'))
             doc_path = data.get('path')
 
-            if not doc_path or not Path(doc_path).exists():
+            if not doc_path:
+                raise ValueError("Invalid document path")
+
+            p_doc_path = Path(doc_path).resolve()
+            if not p_doc_path.is_relative_to(INCOMING.resolve()) or not p_doc_path.exists():
                 raise ValueError("Invalid document path")
 
             # Process the document
@@ -186,8 +190,11 @@ class PortOfEntryServer(http.server.SimpleHTTPRequestHandler):
 
             for i in range(batch_size):
                 doc_path = documents[i]['path']
+                if not doc_path:
+                    continue
 
-                if Path(doc_path).exists():
+                p_doc_path = Path(doc_path).resolve()
+                if p_doc_path.is_relative_to(INCOMING.resolve()) and p_doc_path.exists():
                     result = processor.process_document(doc_path)
 
                     if result['success']:
@@ -279,8 +286,8 @@ class PortOfEntryServer(http.server.SimpleHTTPRequestHandler):
             content_type = parts[4]
 
             # Find package directory
-            package_dir = COMPLETE_PACKAGES / doc_id
-            if not package_dir.exists():
+            package_dir = (COMPLETE_PACKAGES / doc_id).resolve()
+            if not package_dir.is_relative_to(COMPLETE_PACKAGES.resolve()) or not package_dir.exists():
                 raise ValueError("Package not found")
 
             # Determine which file to read

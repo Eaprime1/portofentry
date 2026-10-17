@@ -34,7 +34,7 @@ Each document receives:
 ### Directory Structure
 
 ```
-/home/sauron/
+/path/to/project/
 ├── portofentry_external/
 │   └── incoming/                    # Documents waiting to be processed
 │       ├── research_paper.txt
@@ -187,7 +187,7 @@ Official ASCII-bordered document certifying:
 
 1. **Start the Server**:
 ```bash
-cd /home/sauron/Qrunexusiam/portofentry
+cd .
 python3 port_server_v0.py
 ```
 
@@ -198,8 +198,8 @@ You should see:
 ======================================================================
 
 🌐 Server URL:        http://localhost:8000
-📂 Incoming:          /home/sauron/portofentry_external/incoming
-📦 Complete Packages: /home/sauron/Qrunexusiam/portofentry/portofentry_internal/complete_packages
+📂 Incoming:          portofentry_external/incoming
+📦 Complete Packages: portofentry_internal/complete_packages
 
 📺 Open UI: http://localhost:8000/document_processor_v0.html
 
@@ -217,7 +217,7 @@ Open in browser: `http://localhost:8000/management_console.html`
 
 #### Single Document Processing
 
-1. Place document in `/home/sauron/portofentry_external/incoming/`
+1. Place document in `portofentry_external/incoming/`
 2. Open Processing Interface
 3. Document appears in the list with its economic symbol
 4. Click "Process Document"
@@ -298,7 +298,7 @@ The system tracks:
 ### Example 1: Processing Research Paper
 
 ```
-1. Save paper.pdf to /home/sauron/portofentry_external/incoming/
+1. Save paper.pdf to portofentry_external/incoming/
 2. Open http://localhost:8000/document_processor_v0.html
 3. See "paper.pdf" with symbol €
 4. Click "Process Document"
@@ -411,7 +411,7 @@ python3 port_server_v0.py
 ```
 
 ### Documents Not Appearing
-1. Check files are in `/home/sauron/portofentry_external/incoming/`
+1. Check files are in `portofentry_external/incoming/`
 2. Refresh browser (F5)
 3. Check server console for errors
 4. Verify file permissions
@@ -535,10 +535,10 @@ Ctrl+C (in server terminal)
 pkill -f "python3 port_server_v0.py"
 
 # Add documents
-cp /path/to/file.txt /home/sauron/portofentry_external/incoming/
+cp /path/to/file.txt portofentry_external/incoming/
 
 # View packages
-ls -la /home/sauron/Qrunexusiam/portofentry/portofentry_internal/complete_packages/
+ls -la portofentry_internal/complete_packages/
 
 # View specific package
 cat portofentry_internal/complete_packages/DOC-*/DOC-*_CERTIFICATE.md
@@ -550,9 +550,9 @@ cat portofentry_internal/complete_packages/DOC-*/DOC-*_CERTIFICATE.md
 - **API Base**: http://localhost:8000/api/
 
 ### File Locations
-- **Incoming**: `/home/sauron/portofentry_external/incoming/`
-- **Complete Packages**: `/home/sauron/Qrunexusiam/portofentry/portofentry_internal/complete_packages/`
-- **Server**: `/home/sauron/Qrunexusiam/portofentry/port_server_v0.py`
+- **Incoming**: `portofentry_external/incoming/`
+- **Complete Packages**: `portofentry_internal/complete_packages/`
+- **Server**: `port_server_v0.py`
 
 ---
 

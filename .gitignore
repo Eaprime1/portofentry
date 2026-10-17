@@ -33,3 +33,8 @@ ENV/
 
 # Test files (keep in external)
 /test_*.txt
+
+# Output and external directories
+portofentry_external/
+JOURNEY/
+Qrunexusiam/

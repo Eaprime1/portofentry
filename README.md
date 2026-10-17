@@ -25,7 +25,7 @@ Port of Entry is a unique document processing system that treats every document 
 ### 1. Start the Server
 
 ```bash
-cd /home/sauron/Qrunexusiam/portofentry
+cd .
 python3 port_server_v0.py
 ```
 
@@ -36,7 +36,7 @@ python3 port_server_v0.py
 
 ### 3. Process Documents
 
-1. Place files in `/home/sauron/portofentry_external/incoming/`
+1. Place files in `./portofentry_external/incoming/`
 2. Open Processing Interface
 3. Click "Process Document" or "Process All"
 4. Approve at verification stage

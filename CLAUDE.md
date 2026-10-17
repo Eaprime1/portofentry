@@ -34,7 +34,7 @@
 ### Directory Structure
 
 ```
-/home/sauron/
+./
 ├── portofentry_external/
 │   └── incoming/              # Drop zone for new documents (21 files currently)
 │
@@ -149,14 +149,14 @@ Each processed document generates 5 files:
 ## Important Notes
 
 ### File Locations
-- **Incoming directory**: `/home/sauron/portofentry_external/incoming/`
-- **Complete packages**: `/home/sauron/Qrunexusiam/portofentry/portofentry_internal/complete_packages/`
-- **Project root**: `/home/sauron/Qrunexusiam/portofentry/`
+- **Incoming directory**: `./portofentry_external/incoming/`
+- **Complete packages**: `./portofentry_internal/complete_packages/`
+- **Project root**: `./`
 
 ### Server Management
 ```bash
 # Start server
-cd /home/sauron/Qrunexusiam/portofentry
+cd .
 python3 port_server_v0.py
 
 # Stop server
@@ -244,7 +244,7 @@ git push origin main
 
 ```bash
 # View incoming documents
-ls -la /home/sauron/portofentry_external/incoming/
+ls -la ./portofentry_external/incoming/
 
 # View completed packages
 ls -la portofentry_internal/complete_packages/

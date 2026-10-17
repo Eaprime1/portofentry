@@ -361,7 +361,7 @@
             <div class="terminal" id="terminal">
                 <div class="terminal-line terminal-success">∰◊€π¿🌌∞ PORT OF ENTRY PROCESSOR v0 ∰◊€π¿🌌∞</div>
                 <div class="terminal-line terminal-info">System initialized. Ready for document processing.</div>
-                <div class="terminal-line">Incoming directory: /home/sauron/portofentry_external/incoming</div>
+                <div class="terminal-line">Incoming directory: portofentry_external/incoming</div>
                 <div class="terminal-line"></div>
             </div>
 
@@ -455,7 +455,7 @@
 
         // Load real documents from API
         async function loadDocuments() {
-            terminalWrite('ls /home/sauron/portofentry_external/incoming/', 'command');
+            terminalWrite('ls portofentry_external/incoming/', 'command');
             terminalWrite('Scanning for documents...', 'info');
 
             try {
